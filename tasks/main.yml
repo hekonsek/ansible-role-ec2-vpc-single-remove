@@ -1,0 +1,43 @@
+- ec2_vpc_net_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ vpc_name }}"
+  register: vpc_output
+
+- name: Remove subnet route table
+  ec2_vpc_route_table:
+    state: absent
+    vpc_id: "{{vpc_output.vpcs[0].id}}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ vpc_name }}_route_table"
+  when: vpc_output.vpcs | length>0
+
+- name: Remove Internet Gateway
+  ec2_vpc_igw:
+    state: absent
+    region: "{{ region }}"
+    vpc_id: "{{vpc_output.vpcs[0].id}}"
+    tags:
+      Name: "{{ vpc_name }}_internet_gateway"
+  when: vpc_output.vpcs | length>0
+
+- name: Remove subnet
+  ec2_vpc_subnet:
+    region: "{{ region }}"
+    state: absent
+    vpc_id: "{{vpc_output.vpcs[0].id}}"
+    cidr: 10.0.0.0/24
+    resource_tags:
+      Name: "{{ vpc_name }}_subnet"
+  when: vpc_output.vpcs | length>0
+
+- name: Removing VPC {{ vpc_name }}
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: 10.0.0.0/16
+    region: "{{ region }}"
+    state: absent
+    tags:
+      Name: "{{ vpc_name }}"
+  when: vpc_output.vpcs | length>0

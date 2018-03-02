@@ -1,0 +1,15 @@
+galaxy_info:
+  author: Henryk Konsek
+  description: Removes EC2 VPN with a single public subnetwork (created using https://github.com/hekonsek/ansible-role-ec2-vpc-single)
+  company: Red Hat
+
+  license: Apache 2.0
+
+  min_ansible_version: 1.2
+
+  platforms:
+  - name: Fedora
+    versions:
+    - 26 # Galaxy does not support Fedora 27 yet
+
+  galaxy_tags: ["AWS", "EC2"]
